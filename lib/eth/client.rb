@@ -458,6 +458,20 @@ module Eth
 
     # Prepares parameters and sends the command to the client.
     def send_command(command, args)
+      puts "==== in send_command, command: #{command.inspect}, args: #{args.inspect}"
+      
+      if args[0].class == Hash && args[0].has_key?(:gas_limit)
+        the_hash = args[0]
+        the_hash[:gas] = the_hash[:gas_limit]
+        the_hash[:gasPrice] = the_hash[:gas_priice]
+        the_hash.delete(:gas_limit)
+        the_hash.delete(:gas_price)
+        the_hash.delete(:chain_id)
+        the_hash.delete(:priority_fee)
+        the_hash.delete(:max_gas_fee)
+        args[0] = the_hash
+      end
+      
       args << "latest" if ["eth_getBalance", "eth_call"].include? command
       payload = {
         jsonrpc: "2.0",
